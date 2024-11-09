@@ -1,12 +1,15 @@
 // index.js
 const express = require('express');
 const app = express();
+const compression = require('compression');
 const bodyParser = require('body-parser');
+
 const cloudinaryRoutes = require('./cloudinaryRoutes');
 const firestoreRoutes = require('./firestoreRoutes');
 const authMiddleware = require('./authMiddleware');
 const cors = require('cors');
 
+app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/api/cloudinary', authMiddleware, cloudinaryRoutes);
