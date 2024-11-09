@@ -148,4 +148,39 @@ router.delete('/datos/delete/:id', async (req, res) => {
   }
 });
 
+// Ruta para obtener todos los datos con una fecha específica
+router.get('/datos/fecha/:fecha', async (req, res) => {
+  try {
+    const fecha = req.params.fecha; // Formato esperado: 'YYYY-MM-DD'
+    const q = query(collection(db, 'datos'), where('fecha', '==', fecha));
+    const querySnapshot = await getDocs(q);
+    const datos = [];
+    querySnapshot.forEach((doc) => {
+      datos.push({ id: doc.id, ...doc.data() });
+    });
+    res.json(datos);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Ruta para obtener todos los datos de un mes específico
+router.get('/datos/mes/:anio/:mes', async (req, res) => {
+  try {
+    const anio = req.params.anio; // Formato esperado: 'YYYY'
+    const mes = req.params.mes.padStart(2, '0'); // Formato esperado: 'MM'
+    const inicioMes = `${anio}-${mes}-01`;
+    const finMes = `${anio}-${mes}-31`;
+    const q = query(collection(db, 'datos'), where('fecha', '>=', inicioMes), where('fecha', '<=', finMes));
+    const querySnapshot = await getDocs(q);
+    const datos = [];
+    querySnapshot.forEach((doc) => {
+      datos.push({ id: doc.id, ...doc.data() });
+    });
+    res.json(datos);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
